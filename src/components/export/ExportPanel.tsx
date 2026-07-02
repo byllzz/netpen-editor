@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { X, Download, FileCode, FileText, Archive, Code2 } from 'lucide-react';
+import { X, Download, FileCode, FileText, Archive, Code2, FileJson } from 'lucide-react';
 import { Preview } from '../preview/Preview';
-import { Button } from '../ui/Button'; // <--- FIXED: Added import
-
+import { Button } from '../ui/Button';
+import JSZip from 'jszip'; // <--- Added ZIP library
+import { BiSolidFileCss } from 'react-icons/bi';
 interface ExportPanelProps {
   isOpen: boolean;
   onClose: () => void;
@@ -12,46 +13,31 @@ interface ExportPanelProps {
   projectName: string;
 }
 
-type ExportFormat = 'separate' | 'combined';
-
 export function ExportPanel({ isOpen, onClose, html, css, js, projectName }: ExportPanelProps) {
-  const [format, setFormat] = useState<ExportFormat>('separate');
   const [includeComments, setIncludeComments] = useState(true);
   const [minify, setMinify] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleDownload = () => {
-    if (format === 'separate') {
-      // Download HTML
-      const htmlBlob = new Blob([html], { type: 'text/html' });
-      const htmlUrl = URL.createObjectURL(htmlBlob);
-      const a = document.createElement('a');
-      a.href = htmlUrl;
-      a.download = `${projectName}.html`;
-      a.click();
-      URL.revokeObjectURL(htmlUrl);
+  // Helper to trigger a file download
+  const downloadFile = (content: string, filename: string, type: string) => {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
-      // Download CSS
-      const cssBlob = new Blob([css], { type: 'text/css' });
-      const cssUrl = URL.createObjectURL(cssBlob);
-      const a2 = document.createElement('a');
-      a2.href = cssUrl;
-      a2.download = `${projectName}.css`;
-      a2.click();
-      URL.revokeObjectURL(cssUrl);
+  // Individual downloads
+  const downloadHtml = () => downloadFile(html, `${projectName}.html`, 'text/html');
+  const downloadCss = () => downloadFile(css, `${projectName}.css`, 'text/css');
+  const downloadJs = () => downloadFile(js, `${projectName}.js`, 'application/javascript');
 
-      // Download JS
-      const jsBlob = new Blob([js], { type: 'application/javascript' });
-      const jsUrl = URL.createObjectURL(jsBlob);
-      const a3 = document.createElement('a');
-      a3.href = jsUrl;
-      a3.download = `${projectName}.js`;
-      a3.click();
-      URL.revokeObjectURL(jsUrl);
-    } else {
-      // Combined HTML file
-      const combinedDoc = `<!DOCTYPE html>
+  // Download combined single HTML file
+  const downloadCombined = () => {
+    const combinedDoc = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -66,15 +52,23 @@ export function ExportPanel({ isOpen, onClose, html, css, js, projectName }: Exp
   <script>${js}<\/script>
 </body>
 </html>`;
+    downloadFile(combinedDoc, `${projectName}.html`, 'text/html');
+  };
 
-      const combinedBlob = new Blob([combinedDoc], { type: 'text/html' });
-      const combinedUrl = URL.createObjectURL(combinedBlob);
-      const a = document.createElement('a');
-      a.href = combinedUrl;
-      a.download = `${projectName}.html`;
-      a.click();
-      URL.revokeObjectURL(combinedUrl);
-    }
+  // Download all as ZIP
+  const downloadZip = async () => {
+    const zip = new JSZip();
+    zip.file(`${projectName}.html`, html);
+    zip.file(`${projectName}.css`, css);
+    zip.file(`${projectName}.js`, js);
+
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${projectName}.zip`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -96,82 +90,128 @@ export function ExportPanel({ isOpen, onClose, html, css, js, projectName }: Exp
 
         {/* Body - Split Layout */}
         <div className="flex-1 flex min-h-0">
-          {/* Left Side - Controls */}
-          <div className="w-[320px] min-w-[280px] border-r border-[#333] p-6 overflow-y-auto flex flex-col gap-6">
+          {/* Left Side - File List & Controls */}
+          <div className="w-[340px] min-w-[280px] border-r border-[#333] p-6 overflow-y-auto flex flex-col gap-6">
+            {/* File List Section */}
             <div>
               <h3 className="text-sm font-bold text-gray-300 mb-3 flex items-center gap-2">
-                <FileCode className="w-4 h-4" /> Export Options
+                <FileCode className="w-4 h-4" /> Project Files
               </h3>
 
-              <div className="space-y-3">
-                <label className="flex items-center gap-3 cursor-pointer text-sm text-gray-300 hover:text-white transition-colors">
-                  <input
-                    type="radio"
-                    name="format"
-                    checked={format === 'separate'}
-                    onChange={() => setFormat('separate')}
-                    className="w-4 h-4 accent-indigo-500"
-                  />
-                  <span>Separate files (HTML, CSS, JS)</span>
-                </label>
-                <label className="flex items-center gap-3 cursor-pointer text-sm text-gray-300 hover:text-white transition-colors">
-                  <input
-                    type="radio"
-                    name="format"
-                    checked={format === 'combined'}
-                    onChange={() => setFormat('combined')}
-                    className="w-4 h-4 accent-indigo-500"
-                  />
-                  <span>Combined single HTML file</span>
-                </label>
+              <div className="space-y-2">
+                {/* HTML */}
+                <div className="flex items-center justify-between bg-[#0a0a0a] p-3 rounded-md border border-[#333] group hover:border-indigo-500/50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded bg-orange-500/20 flex items-center justify-center">
+                      <FileText className="w-4 h-4 text-orange-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">{projectName}.html</p>
+                      <p className="text-[10px] text-gray-500">{html.length} characters</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={downloadHtml}
+                    className="p-1.5 rounded-md hover:bg-[#333] transition-colors text-gray-400 hover:text-white cursor-pointer"
+                    title="Download HTML"
+                  >
+                    <Download className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* CSS */}
+                <div className="flex items-center justify-between bg-[#0a0a0a] p-3 rounded-md border border-[#333] group hover:border-indigo-500/50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded bg-blue-500/20 flex items-center justify-center">
+                      <BiSolidFileCss className="w-4 h-4 text-blue-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">{projectName}.css</p>
+                      <p className="text-[10px] text-gray-500">{css.length} characters</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={downloadCss}
+                    className="p-1.5 rounded-md hover:bg-[#333] transition-colors text-gray-400 hover:text-white cursor-pointer"
+                    title="Download CSS"
+                  >
+                    <Download className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* JS */}
+                <div className="flex items-center justify-between bg-[#0a0a0a] p-3 rounded-md border border-[#333] group hover:border-indigo-500/50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded bg-yellow-500/20 flex items-center justify-center">
+                      <FileJson className="w-4 h-4 text-yellow-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">{projectName}.js</p>
+                      <p className="text-[10px] text-gray-500">{js.length} characters</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={downloadJs}
+                    className="p-1.5 rounded-md hover:bg-[#333] transition-colors text-gray-400 hover:text-white cursor-pointer"
+                    title="Download JS"
+                  >
+                    <Download className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
 
-            <div className="border-t border-[#333] pt-6">
-              <h3 className="text-sm font-bold text-gray-300 mb-3 flex items-center gap-2">
-                <Archive className="w-4 h-4" /> Advanced
-              </h3>
-
-              <div className="space-y-3">
-                <label className="flex items-center gap-3 cursor-pointer text-sm text-gray-300 hover:text-white transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={includeComments}
-                    onChange={() => setIncludeComments(!includeComments)}
-                    className="w-4 h-4 accent-indigo-500 rounded"
-                  />
-                  <span>Include comments</span>
-                </label>
-                <label className="flex items-center gap-3 cursor-pointer text-sm text-gray-300 hover:text-white transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={minify}
-                    onChange={() => setMinify(!minify)}
-                    className="w-4 h-4 accent-indigo-500 rounded"
-                  />
-                  <span>Minify code</span>
-                </label>
-              </div>
-            </div>
-
-            <div className="border-t border-[#333] pt-6 mt-auto">
+            {/* Bulk Download Buttons */}
+            <div className="border-t border-[#333] pt-6 flex flex-col gap-3">
               <Button
-                onClick={handleDownload}
+                onClick={downloadZip}
                 className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-md flex items-center justify-center gap-2 transition-colors"
               >
-                <Download className="w-4 h-4" />
-                Download {format === 'separate' ? 'Files' : 'File'}
+                <Archive className="w-4 h-4" />
+                Download All as ZIP
               </Button>
-              <p className="text-[10px] text-gray-500 text-center mt-2">
-                Files will be saved as{' '}
-                <span className="text-gray-400 font-mono">{projectName}</span>.*
-              </p>
+
+              <Button
+                onClick={downloadCombined}
+                className="w-full bg-[#2a2a2a] hover:bg-[#3a3a3a] text-white font-medium py-2.5 rounded-md flex items-center justify-center gap-2 transition-colors border border-[#444]"
+              >
+                <FileCode className="w-4 h-4" />
+                Download Combined HTML
+              </Button>
+            </div>
+
+            {/* Advanced Options (Collapsed for cleaner UI) */}
+            <div className="border-t border-[#333] pt-4">
+              <details className="text-sm text-gray-400 cursor-pointer group">
+                <summary className="flex items-center gap-2 hover:text-white transition-colors">
+                  <span>Advanced Options</span>
+                </summary>
+                <div className="mt-3 space-y-2 pl-1">
+                  <label className="flex items-center gap-3 cursor-pointer text-sm text-gray-400 hover:text-gray-300 transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={includeComments}
+                      onChange={() => setIncludeComments(!includeComments)}
+                      className="w-4 h-4 accent-indigo-500 rounded"
+                    />
+                    <span>Include comments</span>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer text-sm text-gray-400 hover:text-gray-300 transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={minify}
+                      onChange={() => setMinify(!minify)}
+                      className="w-4 h-4 accent-indigo-500 rounded"
+                    />
+                    <span>Minify code</span>
+                  </label>
+                </div>
+              </details>
             </div>
           </div>
 
           {/* Right Side - Preview */}
           <div className="flex-1 bg-white relative overflow-hidden">
-            {/* FIXED: Removed allow-same-origin to stop browser warning */}
             <Preview html={html} css={css} js={js} />
           </div>
         </div>
