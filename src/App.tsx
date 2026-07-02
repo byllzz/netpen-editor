@@ -21,6 +21,7 @@ function App() {
   const [dismissedHtml, setDismissedHtml] = useState(false);
   const [dismissedCss, setDismissedCss] = useState(false);
   const [dismissedJs, setDismissedJs] = useState(false);
+  const [projectName, setProjectName] = useState('Untitled');
 
   const debouncedHtml = useDebounce(html, 400);
   const debouncedCss = useDebounce(css, 400);
@@ -69,7 +70,16 @@ function App() {
 
   return (
     <div className="h-screen flex flex-col bg-[#0a0a0a] text-[#e0e0e0] overflow-hidden">
-      <Header totalChanges={totalChanges} layout={layout} setLayout={setLayout} />
+      <Header
+        totalChanges={totalChanges}
+        layout={layout}
+        setLayout={setLayout}
+        html={html}
+        css={css}
+        js={js}
+        projectName={projectName}
+        setProjectName={setProjectName}
+      />
 
       {/* MAIN CONTENT AREA - Changes layout based on state */}
       <div className="flex-1 flex min-h-0 overflow-hidden bg-[#1C1C1C]">
