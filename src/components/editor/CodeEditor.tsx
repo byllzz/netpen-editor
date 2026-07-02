@@ -18,6 +18,7 @@ import {
   foldGutter,
   indentOnInput,
 } from '@codemirror/language';
+import { autocompletion, closeBrackets } from '@codemirror/autocomplete'; // Added
 import { html } from '@codemirror/lang-html';
 import { css } from '@codemirror/lang-css';
 import { javascript } from '@codemirror/lang-javascript';
@@ -71,6 +72,8 @@ export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
         oneDark,
         languageExtensions[language],
         updateListener,
+        autocompletion(), // Enables autocomplete suggestions
+        closeBrackets(), // Auto-closes brackets and tags
         EditorView.theme({
           '&': { height: '100%', fontSize: '13px', backgroundColor: '#0d0d0d' },
           '.cm-scroller': {
