@@ -7,6 +7,7 @@ import {
   highlightSpecialChars,
   drawSelection,
   rectangularSelection,
+  crosshairCursor,
 } from '@codemirror/view';
 import { EditorState } from '@codemirror/state';
 import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
@@ -28,16 +29,11 @@ interface CodeEditorProps {
   onChange: (value: string) => void;
 }
 
-function getLanguageExtension(language: 'html' | 'css' | 'js') {
-  switch (language) {
-    case 'html':
-      return html();
-    case 'css':
-      return css();
-    case 'js':
-      return javascript();
-  }
-}
+const languageExtensions = {
+  html: html(),
+  css: css(),
+  js: javascript(),
+};
 
 export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
@@ -45,6 +41,11 @@ export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
 
   useEffect(() => {
     if (!editorRef.current) return;
+
+    if (viewRef.current) {
+      viewRef.current.destroy();
+      viewRef.current = null;
+    }
 
     const updateListener = EditorView.updateListener.of(update => {
       if (update.docChanged) {
@@ -60,21 +61,18 @@ export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
         highlightSpecialChars(),
         drawSelection(),
         rectangularSelection(),
+        crosshairCursor(),
         bracketMatching(),
         foldGutter(),
         indentOnInput(),
         syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
         history(),
         keymap.of([...defaultKeymap, ...historyKeymap, indentWithTab]),
-        getLanguageExtension(language),
         oneDark,
+        languageExtensions[language],
         updateListener,
         EditorView.theme({
-          '&': {
-            height: '100%',
-            fontSize: '13px',
-            backgroundColor: '#0d0d0d',
-          },
+          '&': { height: '100%', fontSize: '13px', backgroundColor: '#0d0d0d' },
           '.cm-scroller': {
             fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
             lineHeight: '1.7',
@@ -85,33 +83,16 @@ export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
             border: 'none',
             paddingRight: '8px',
           },
-          '.cm-activeLineGutter': {
-            backgroundColor: '#111',
-            color: '#888',
-          },
-          '.cm-activeLine': {
-            backgroundColor: '#0f0f0f',
-          },
-          '.cm-cursor': {
-            borderLeftColor: '#6366f1',
-          },
-          '.cm-selectionBackground': {
-            backgroundColor: '#1e3a5f !important',
-          },
-          '.cm-foldPlaceholder': {
-            backgroundColor: '#1a1a1a',
-            color: '#666',
-            border: 'none',
-          },
+          '.cm-activeLineGutter': { backgroundColor: '#111', color: '#888' },
+          '.cm-activeLine': { backgroundColor: '#0f0f0f' },
+          '.cm-cursor': { borderLeftColor: '#6366f1' },
+          '.cm-selectionBackground': { backgroundColor: '#1e3a5f !important' },
+          '.cm-foldPlaceholder': { backgroundColor: '#1a1a1a', color: '#666', border: 'none' },
         }),
       ],
     });
 
-    const view = new EditorView({
-      state,
-      parent: editorRef.current,
-    });
-
+    const view = new EditorView({ state, parent: editorRef.current });
     viewRef.current = view;
 
     return () => {
@@ -120,16 +101,12 @@ export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
     };
   }, [language]);
 
-  // Update value externally (e.g., on reset)
   useEffect(() => {
     const view = viewRef.current;
     if (!view) return;
-
     const currentDoc = view.state.doc.toString();
     if (value !== currentDoc) {
-      view.dispatch({
-        changes: { from: 0, to: currentDoc.length, insert: value },
-      });
+      view.dispatch({ changes: { from: 0, to: currentDoc.length, insert: value } });
     }
   }, [value]);
 
