@@ -11,6 +11,7 @@ import logo from '/log.svg';
 import { LAYOUT_MODES, type LayoutMode } from '../../lib/layout';
 import { ProjectNameEditor } from './ProjectNameEditor';
 import { ExportPanel } from '../export/ExportPanel';
+import { SettingsPanel } from '../settings/SettingsPanel'; // <--- Added import
 
 interface HeaderProps {
   totalChanges: number;
@@ -35,6 +36,7 @@ export function Header({
 }: HeaderProps) {
   const [showLayoutMenu, setShowLayoutMenu] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false); // <--- Added state
 
   const toggleMenu = () => setShowLayoutMenu(prev => !prev);
 
@@ -67,7 +69,12 @@ export function Header({
             <IoIosCloud className="w-[17px] h-[17px] text-white" />
             <span>Export</span>
           </Button>
-          <Button className="bg-[#5A5F73]! hover:bg-[#3a3f50]! text-white text-[15px]! font-medium px-[18px] h-10.5 rounded-[4px]! flex items-center gap-[5px]! transition-colors border-0">
+
+          {/* Updated Settings Button */}
+          <Button
+            className="bg-[#5A5F73]! hover:bg-[#3a3f50]! text-white text-[15px]! font-medium px-[18px] h-10.5 rounded-[4px]! flex items-center gap-[5px]! transition-colors border-0 cursor-pointer"
+            onClick={() => setIsSettingsOpen(true)}
+          >
             <IoIosSettings className="w-[17px] h-[17px] text-white" />
             <span>Settings</span>
           </Button>
@@ -128,6 +135,9 @@ export function Header({
         js={js}
         projectName={projectName}
       />
+
+      {/* Settings Modal */}
+      <SettingsPanel isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </>
   );
 }
