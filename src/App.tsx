@@ -10,6 +10,7 @@ import { type LayoutMode } from './lib/layout';
 
 const CODE_STORAGE_KEY = 'netpen_code';
 const PROJECT_NAME_KEY = 'netpen_project_name';
+const LAYOUT_STORAGE_KEY = 'netpen_layout'; // Added
 
 function App() {
   const [html, setHtml] = useState(() => {
@@ -90,7 +91,12 @@ function App() {
     return 0;
   });
 
-  const [layout, setLayout] = useState<LayoutMode>('default');
+  // Load layout from localStorage
+  const [layout, setLayout] = useState<LayoutMode>(() => {
+    const saved = localStorage.getItem(LAYOUT_STORAGE_KEY);
+    return (saved as LayoutMode) || 'default';
+  });
+
   const [dismissedHtml, setDismissedHtml] = useState(false);
   const [dismissedCss, setDismissedCss] = useState(false);
   const [dismissedJs, setDismissedJs] = useState(false);
@@ -104,10 +110,8 @@ function App() {
 
   const totalChanges = htmlChanges + cssChanges + jsChanges;
 
-  // Save state for the button
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
 
-  // When debounced values change, trigger saving status
   useEffect(() => {
     if (totalChanges === 0) {
       setSaveStatus('idle');
@@ -116,17 +120,20 @@ function App() {
     setSaveStatus('saving');
     const timer = setTimeout(() => {
       setSaveStatus('saved');
-    }, 600); // show "Changes Saved" after a short delay
+    }, 600);
     return () => clearTimeout(timer);
   }, [debouncedHtml, debouncedCss, debouncedJs, totalChanges]);
 
-  // Auto-save code to localStorage
+  // Save layout preference
+  useEffect(() => {
+    localStorage.setItem(LAYOUT_STORAGE_KEY, layout);
+  }, [layout]);
+
   useEffect(() => {
     const data = { html, css, js, htmlChanges, cssChanges, jsChanges };
     localStorage.setItem(CODE_STORAGE_KEY, JSON.stringify(data));
   }, [html, css, js, htmlChanges, cssChanges, jsChanges]);
 
-  // Auto-save project name
   useEffect(() => {
     localStorage.setItem(PROJECT_NAME_KEY, projectName);
   }, [projectName]);
@@ -182,7 +189,7 @@ function App() {
         setProjectName={setProjectName}
         saveStatus={saveStatus}
       />
-      {/* MAIN CONTENT AREA - unchanged */}
+
       <div className="flex-1 flex min-h-0 overflow-hidden bg-[#1C1C1C]">
         {layout === 'default' && (
           <div className="flex-1 flex flex-row min-h-0 px-3 gap-3">
