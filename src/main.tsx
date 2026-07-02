@@ -8,7 +8,6 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <SettingsProvider>
       {' '}
-      {/* <--- Wrapped App */}
       <App />
     </SettingsProvider>
   </StrictMode>,

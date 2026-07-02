@@ -22,7 +22,7 @@ export function ExportPanel({ isOpen, onClose, html, css, js, projectName }: Exp
 
   if (!isOpen) return null;
 
-  // ---------- HELPER: Minify Code ----------
+  // helper
   const minifyCode = (code: string) => {
     if (!minify) return code; // Skip if minify is off
 
@@ -34,7 +34,7 @@ export function ExportPanel({ isOpen, onClose, html, css, js, projectName }: Exp
       .trim();
   };
 
-  // ---------- HELPER: Handle Comments ----------
+  //   Handle Comments
   const processComments = (code: string) => {
     if (includeComments) return code;
     return code
@@ -42,14 +42,14 @@ export function ExportPanel({ isOpen, onClose, html, css, js, projectName }: Exp
       .replace(/\/\/.*$/gm, ''); // Remove single-line comments
   };
 
-  // ---------- HELPER: Process Final Code ----------
+  //   Process Final Code
   const processCode = (code: string) => {
     let result = processComments(code);
     result = minifyCode(result);
     return result;
   };
 
-  // ---------- HELPER: Download File ----------
+  //   Download File
   const downloadFile = (content: string, filename: string, type: string) => {
     const blob = new Blob([content], { type });
     const url = URL.createObjectURL(blob);
@@ -60,13 +60,13 @@ export function ExportPanel({ isOpen, onClose, html, css, js, projectName }: Exp
     URL.revokeObjectURL(url);
   };
 
-  // ---------- Individual Downloads ----------
+  //  Individual Downloads
   const downloadHtml = () => downloadFile(processCode(html), `${projectName}.html`, 'text/html');
   const downloadCss = () => downloadFile(processCode(css), `${projectName}.css`, 'text/css');
   const downloadJs = () =>
     downloadFile(processCode(js), `${projectName}.js`, 'application/javascript');
 
-  // ---------- Download Combined HTML ----------
+  //  Download Combined HTML
   const downloadCombined = () => {
     const combinedDoc = `<!DOCTYPE html>
 <html lang="en">
@@ -86,7 +86,7 @@ export function ExportPanel({ isOpen, onClose, html, css, js, projectName }: Exp
     downloadFile(combinedDoc, `${projectName}.html`, 'text/html');
   };
 
-  // ---------- Download All as ZIP ----------
+  //  Download All as ZIP
   const downloadZip = async () => {
     const zip = new JSZip();
     zip.file(`${projectName}.html`, processCode(html));

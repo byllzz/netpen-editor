@@ -13,8 +13,8 @@ export const defaultHtml = `
   <div class="links">
     <a href="https://github.com/byllzz" target="_blank" class="link-btn">GitHub</a>
     <a href="https://x.com/bilalmlkdev" target="_blank" class="link-btn">Twitter / X</a>
-    <a href="#" target="_blank" class="link-btn">Portfolio</a>
-    <a href="#" target="_blank" class="link-btn">YouTube</a>
+    <a href="https://bilalmlkdev.vercel.app" target="_blank" class="link-btn">Portfolio</a>
+    <a href="https://uiverse.io/byllzz" target="_blank" class="link-btn">UIverse.io</a>
   </div>
 </div>
 `;

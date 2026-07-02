@@ -3,7 +3,7 @@ import { Button } from '../ui/Button';
 import { IoIosSettings, IoIosCloud, IoIosShare } from 'react-icons/io';
 import { RiLayout3Fill } from 'react-icons/ri';
 import { Columns, Sidebar, Split } from 'lucide-react';
-import logo from '/log.svg';
+import logo from '/logo.svg';
 import { LAYOUT_MODES, type LayoutMode } from '../../lib/layout';
 import { ProjectNameEditor } from './ProjectNameEditor';
 import { ExportPanel } from '../export/ExportPanel';

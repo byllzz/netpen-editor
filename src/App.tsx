@@ -189,11 +189,10 @@ function App() {
       />
 
       <div className="flex-1 flex min-h-0 overflow-hidden bg-[#1C1C1C]">
-        {/* CASE 1: DEFAULT LAYOUT - FIXED OVERFLOW HERE */}
+        {/* CASE 1: DEFAULT LAYOUT */}
         {layout === 'default' && (
           <div className="flex-1 flex flex-row min-h-0 min-w-0 px-3 gap-3">
             {' '}
-            {/* <--- Added min-w-0 here */}
             <div className="flex-1 flex flex-col border-r border-l border-[#ccc]/20 min-w-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 bg-[#282C34]! min-h-[38px] min-w-[90px] px-2 border-t-3 border-[#ccc]/20">
@@ -233,7 +232,7 @@ function App() {
           </div>
         )}
 
-        {/* CASE 2: SIDEBAR LAYOUT (Unchanged) */}
+        {/* CASE 2: SIDEBAR LAYOUT  */}
         {layout === 'sidebar' && (
           <div className="flex flex-row w-full h-full">
             <div className="w-[300px] min-w-[250px] max-w-[400px] h-full flex flex-col border-r border-[#ccc]/20 bg-[#1C1C1C]">
@@ -285,7 +284,7 @@ function App() {
           </div>
         )}
 
-        {/* CASE 3: SPLIT LAYOUT (Unchanged) */}
+        {/* CASE 3: SPLIT LAYOUT  */}
         {layout === 'split' && (
           <div className="flex flex-row w-full h-full">
             <div className="w-[50%] min-w-[400px] h-full flex flex-col border-r border-[#ccc]/20 bg-[#1C1C1C]">

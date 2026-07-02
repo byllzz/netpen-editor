@@ -77,7 +77,7 @@ export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
       '.cm-foldPlaceholder': { backgroundColor: '#1a1a1a', color: '#666', border: 'none' },
     };
 
-    // In your light theme block:
+    // In light theme block:
     if (theme === 'oneLight') {
       baseTheme = EditorView.theme({});
       themeOverrides = {
@@ -102,7 +102,7 @@ export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
         '.cm-selectionBackground': { backgroundColor: '#add6ff !important' },
         '.cm-foldPlaceholder': { backgroundColor: '#e0e0e0', color: '#888', border: 'none' },
 
-        // FIXED: These are now top-level keys, NOT nested inside '&'
+        // keys........
         '& .cm-keyword': { color: '#d73a49' },
         '& .cm-operator': { color: '#24292e' },
         '& .cm-variable': { color: '#24292e' },
@@ -194,7 +194,7 @@ export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
       view.destroy();
       viewRef.current = null;
     };
-  }, [language, theme, fontSize, tabSize, wordWrap]); // <-- Fixed comma here
+  }, [language, theme, fontSize, tabSize, wordWrap]);
 
   useEffect(() => {
     const view = viewRef.current;
