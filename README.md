@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./favicon.svg" width="120" alt="NetPen Logo" />
+  <img src="./favicon.svg" alt="NetPen Logo" />
 </p>
 
 <h1 align="center">NetPen</h1>
