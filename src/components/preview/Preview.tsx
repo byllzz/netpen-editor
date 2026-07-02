@@ -14,23 +14,40 @@ export function Preview({ html, css, js }: PreviewProps) {
 <html>
 <head>
   <style>
-    /* Reset default body margin so shrinking height doesn't cause overflow */
-    html, body {
-      margin: 0;
-      padding: 0;
-    }
-
-    /* Hide scrollbars visually while still allowing scroll if content needs it */
-    html {
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* IE/Edge */
-    }
-    html::-webkit-scrollbar {
-      display: none; /* Chrome/Safari */
-    }
-
+    /* Reset default body margin */
+    html, body { margin: 0; padding: 0; }
+    /* Hide scrollbars visually */
+    html { scrollbar-width: none; -ms-overflow-style: none; }
+    html::-webkit-scrollbar { display: none; }
     ${css}
   </style>
+  <script>
+    // Hidden helper to calculate the background color and send it to React
+    function __syncBgColor() {
+      try {
+        const bodyBg = getComputedStyle(document.body).backgroundColor;
+        const htmlBg = getComputedStyle(document.documentElement).backgroundColor;
+
+        let color = '#ffffff'; // Default browser background
+
+        // Browsers report transparent backgrounds as 'rgba(0, 0, 0, 0)'
+        if (bodyBg && bodyBg !== 'rgba(0, 0, 0, 0)') {
+          color = bodyBg;
+        } else if (htmlBg && htmlBg !== 'rgba(0, 0, 0, 0)') {
+          color = htmlBg;
+        }
+
+        window.parent.postMessage({ type: 'PREVIEW_BG_COLOR', color: color }, '*');
+      } catch (e) {}
+    }
+
+    window.addEventListener('DOMContentLoaded', __syncBgColor);
+    window.addEventListener('load', __syncBgColor);
+
+    // Catch late CSS rendering
+    setTimeout(__syncBgColor, 50);
+    setTimeout(__syncBgColor, 150);
+  </script>
 </head>
 <body>
   ${html}
@@ -56,8 +73,8 @@ export function Preview({ html, css, js }: PreviewProps) {
     <iframe
       ref={iframeRef}
       title="preview"
-      className="w-full h-full border-0 bg-white"
-      sandbox="allow-scripts allow-modals"
+      className="w-full h-full border-0 bg-transparent absolute top-0 left-0"
+      sandbox="allow-scripts allow-modals allow-same-origin"
     />
   );
 }

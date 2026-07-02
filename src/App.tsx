@@ -68,7 +68,7 @@ function App() {
 
   return (
     <div className="h-screen flex flex-col bg-[#0a0a0a] text-[#e0e0e0] overflow-hidden">
-      <Header totalChanges={totalChanges} />
+      <Header />
 
       <div className="flex-1 flex min-h-0">
         <div className="flex-1 flex flex-col border-r border-[#1a1a1a] min-w-0">

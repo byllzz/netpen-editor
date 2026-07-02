@@ -1,40 +1,47 @@
-import { Code2, Pencil, LayoutGrid } from 'lucide-react';
+import { Pencil, Cloud, Settings, LayoutGrid } from 'lucide-react';
 import { Button } from '../ui/Button';
 
-interface HeaderProps {
-  totalChanges: number;
-}
-
-export function Header({ totalChanges }: HeaderProps) {
+export function Header() {
   return (
-    <header className="h-12 min-h-[48px] border-b border-[#1a1a1a] px-4 flex items-center justify-between bg-[#0a0a0a]">
+    <header className="h-16 min-h-[64px] bg-[#131417] border-b border-[#252830] px-4 flex items-center justify-between text-white select-none">
+      {/* Left side: CodePen Logo & Project Details */}
       <div className="flex items-center gap-3">
-        <div className="w-6 h-6 bg-indigo-500/20 rounded flex items-center justify-center text-indigo-400">
-          <Code2 className="w-4 h-4" />
-        </div>
-        <h1 className="text-sm font-bold text-white tracking-tight">Untitled</h1>
-        <Pencil className="w-3 h-3 text-gray-500" />
-        <span className="text-xs text-gray-500 ml-2">CaptainAnonymous</span>
-      </div>
-      <div className="flex items-center gap-2">
-        {totalChanges > 0 && (
-          <div className="bg-indigo-500/20 text-indigo-400 px-1.5 py-0.5 rounded text-[9px] font-medium mr-1">
-            {totalChanges}
+        <Pencil className="w-9 h-9 text-white" />
+
+        <div className="flex flex-col justify-center">
+          <div className="flex items-center gap-2 leading-none">
+            <h1 className="text-base font-bold text-white tracking-wide hover:underline cursor-pointer">
+              Untitled
+            </h1>
+            <Pencil className="w-3.5 h-3.5 text-[#aaa] cursor-pointer hover:text-white transition-colors" />
           </div>
-        )}
-        <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
-          Save
+          <span className="text-xs text-[#aaa] mt-1 font-normal cursor-pointer hover:text-white transition-colors">
+            Captain Anonymous
+          </span>
+        </div>
+      </div>
+
+      {/* Right side: Action Control Buttons */}
+      <div className="flex items-center gap-2.5">
+        <Button className="bg-[#2c303d] hover:bg-[#3a3f50] text-white text-sm font-medium px-4 h-9 rounded-[4px] flex items-center gap-2 transition-colors border-0">
+          <Cloud className="w-4 h-4 text-white" />
+          <span>Save</span>
         </Button>
-        <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
-          Settings
+
+        <Button className="bg-[#2c303d] hover:bg-[#3a3f50] text-white text-sm font-medium px-4 h-9 rounded-[4px] flex items-center gap-2 transition-colors border-0">
+          <Settings className="w-4 h-4 text-white" />
+          <span>Settings</span>
         </Button>
-        <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white">
-          <LayoutGrid className="w-4 h-4" />
+
+        <Button className="bg-[#2c303d] hover:bg-[#3a3f50] text-white p-2 h-9 w-9 rounded-[4px] flex items-center justify-center transition-colors border-0">
+          <LayoutGrid className="w-4 h-4 text-white" />
         </Button>
-        <Button className="bg-green-500 hover:bg-green-600 text-white font-medium px-3 py-1 text-xs rounded">
+
+        <Button className="bg-[#47cf73] hover:bg-[#24bf53] text-black font-bold text-sm px-4 h-9 rounded-[4px] transition-colors border-0 ml-1">
           Sign Up
         </Button>
-        <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+
+        <Button className="bg-[#2c303d] hover:bg-[#3a3f50] text-white text-sm font-medium px-4 h-9 rounded-[4px] transition-colors border-0">
           Log In
         </Button>
       </div>
