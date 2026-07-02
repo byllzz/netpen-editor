@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { X, Download, FileCode, FileText, Archive, Code2, FileJson } from 'lucide-react';
+import { X, Download, FileCode, Archive, Code2, FileJson } from 'lucide-react';
 import { Preview } from '../preview/Preview';
 import { Button } from '../ui/Button';
-import JSZip from 'jszip'; // <--- Added ZIP library
+import JSZip from 'jszip';
 import { BiSolidFileCss } from 'react-icons/bi';
+import { BiSolidFileHtml } from 'react-icons/bi';
+import { PiFileJsDuotone } from 'react-icons/pi';
+
 interface ExportPanelProps {
   isOpen: boolean;
   onClose: () => void;
@@ -19,7 +22,34 @@ export function ExportPanel({ isOpen, onClose, html, css, js, projectName }: Exp
 
   if (!isOpen) return null;
 
-  // Helper to trigger a file download
+  // ---------- HELPER: Minify Code ----------
+  const minifyCode = (code: string) => {
+    if (!minify) return code; // Skip if minify is off
+
+    return code
+      .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
+      .replace(/\/\/.*$/gm, '') // Remove single-line comments
+      .replace(/\s+/g, ' ') // Collapse multiple spaces/newlines
+      .replace(/\s*([{}():;,])\s*/g, '$1') // Remove spaces around punctuation
+      .trim();
+  };
+
+  // ---------- HELPER: Handle Comments ----------
+  const processComments = (code: string) => {
+    if (includeComments) return code;
+    return code
+      .replace(/\/\*[\s\S]*?\*\//g, '') // Remove multi-line comments
+      .replace(/\/\/.*$/gm, ''); // Remove single-line comments
+  };
+
+  // ---------- HELPER: Process Final Code ----------
+  const processCode = (code: string) => {
+    let result = processComments(code);
+    result = minifyCode(result);
+    return result;
+  };
+
+  // ---------- HELPER: Download File ----------
   const downloadFile = (content: string, filename: string, type: string) => {
     const blob = new Blob([content], { type });
     const url = URL.createObjectURL(blob);
@@ -30,12 +60,13 @@ export function ExportPanel({ isOpen, onClose, html, css, js, projectName }: Exp
     URL.revokeObjectURL(url);
   };
 
-  // Individual downloads
-  const downloadHtml = () => downloadFile(html, `${projectName}.html`, 'text/html');
-  const downloadCss = () => downloadFile(css, `${projectName}.css`, 'text/css');
-  const downloadJs = () => downloadFile(js, `${projectName}.js`, 'application/javascript');
+  // ---------- Individual Downloads ----------
+  const downloadHtml = () => downloadFile(processCode(html), `${projectName}.html`, 'text/html');
+  const downloadCss = () => downloadFile(processCode(css), `${projectName}.css`, 'text/css');
+  const downloadJs = () =>
+    downloadFile(processCode(js), `${projectName}.js`, 'application/javascript');
 
-  // Download combined single HTML file
+  // ---------- Download Combined HTML ----------
   const downloadCombined = () => {
     const combinedDoc = `<!DOCTYPE html>
 <html lang="en">
@@ -44,23 +75,23 @@ export function ExportPanel({ isOpen, onClose, html, css, js, projectName }: Exp
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${projectName}</title>
   <style>
-    ${css}
+    ${processCode(css)}
   </style>
 </head>
 <body>
-  ${html}
-  <script>${js}<\/script>
+  ${processCode(html)}
+  <script>${processCode(js)}<\/script>
 </body>
 </html>`;
     downloadFile(combinedDoc, `${projectName}.html`, 'text/html');
   };
 
-  // Download all as ZIP
+  // ---------- Download All as ZIP ----------
   const downloadZip = async () => {
     const zip = new JSZip();
-    zip.file(`${projectName}.html`, html);
-    zip.file(`${projectName}.css`, css);
-    zip.file(`${projectName}.js`, js);
+    zip.file(`${projectName}.html`, processCode(html));
+    zip.file(`${projectName}.css`, processCode(css));
+    zip.file(`${projectName}.js`, processCode(js));
 
     const blob = await zip.generateAsync({ type: 'blob' });
     const url = URL.createObjectURL(blob);
@@ -103,7 +134,7 @@ export function ExportPanel({ isOpen, onClose, html, css, js, projectName }: Exp
                 <div className="flex items-center justify-between bg-[#0a0a0a] p-3 rounded-md border border-[#333] group hover:border-indigo-500/50 transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded bg-orange-500/20 flex items-center justify-center">
-                      <FileText className="w-4 h-4 text-orange-400" />
+                      <BiSolidFileHtml className="w-4 h-4 text-orange-400" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-white">{projectName}.html</p>
@@ -143,7 +174,7 @@ export function ExportPanel({ isOpen, onClose, html, css, js, projectName }: Exp
                 <div className="flex items-center justify-between bg-[#0a0a0a] p-3 rounded-md border border-[#333] group hover:border-indigo-500/50 transition-colors">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded bg-yellow-500/20 flex items-center justify-center">
-                      <FileJson className="w-4 h-4 text-yellow-400" />
+                      <PiFileJsDuotone className="w-4 h-4 text-yellow-400" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-white">{projectName}.js</p>
@@ -180,33 +211,29 @@ export function ExportPanel({ isOpen, onClose, html, css, js, projectName }: Exp
               </Button>
             </div>
 
-            {/* Advanced Options (Collapsed for cleaner UI) */}
-            <div className="border-t border-[#333] pt-4">
-              <details className="text-sm text-gray-400 cursor-pointer group">
-                <summary className="flex items-center gap-2 hover:text-white transition-colors">
-                  <span>Advanced Options</span>
-                </summary>
-                <div className="mt-3 space-y-2 pl-1">
-                  <label className="flex items-center gap-3 cursor-pointer text-sm text-gray-400 hover:text-gray-300 transition-colors">
-                    <input
-                      type="checkbox"
-                      checked={includeComments}
-                      onChange={() => setIncludeComments(!includeComments)}
-                      className="w-4 h-4 accent-indigo-500 rounded"
-                    />
-                    <span>Include comments</span>
-                  </label>
-                  <label className="flex items-center gap-3 cursor-pointer text-sm text-gray-400 hover:text-gray-300 transition-colors">
-                    <input
-                      type="checkbox"
-                      checked={minify}
-                      onChange={() => setMinify(!minify)}
-                      className="w-4 h-4 accent-indigo-500 rounded"
-                    />
-                    <span>Minify code</span>
-                  </label>
-                </div>
-              </details>
+            {/* Advanced Options - ALWAYS VISIBLE */}
+            <div className="border-t border-[#333] pt-4 space-y-3">
+              <h3 className="text-sm font-bold text-gray-300">Advanced Options</h3>
+
+              <label className="flex items-center gap-3 cursor-pointer text-sm text-gray-300 hover:text-white transition-colors">
+                <input
+                  type="checkbox"
+                  checked={includeComments}
+                  onChange={() => setIncludeComments(!includeComments)}
+                  className="w-4 h-4 accent-indigo-500 rounded cursor-pointer"
+                />
+                <span>Include comments</span>
+              </label>
+
+              <label className="flex items-center gap-3 cursor-pointer text-sm text-gray-300 hover:text-white transition-colors">
+                <input
+                  type="checkbox"
+                  checked={minify}
+                  onChange={() => setMinify(!minify)}
+                  className="w-4 h-4 accent-indigo-500 rounded cursor-pointer"
+                />
+                <span>Minify code</span>
+              </label>
             </div>
           </div>
 
