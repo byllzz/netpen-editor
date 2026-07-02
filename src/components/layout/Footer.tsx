@@ -1,25 +1,32 @@
+import { Terminal, Box, Keyboard } from 'lucide-react';
+
 interface FooterProps {
-  totalChanges: number
+  totalChanges: number;
 }
 
 export function Footer({ totalChanges }: FooterProps) {
   return (
-    <footer className="h-6 min-h-[24px] border-t border-[#1a1a1a] px-4 flex items-center justify-between bg-[#0a0a0a] text-[10px] text-[#444]">
-      <div className="flex items-center gap-3">
-        <span className="text-orange-400">HTML</span>
-        <span className="text-sky-400">CSS</span>
-        <span className="text-amber-400">JS</span>
+    <footer className="h-7 min-h-[28px] border-t border-[#1a1a1a] px-3 flex items-center justify-between bg-[#1e1e1e] text-[10px] text-[#888]">
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-1.5 hover:text-[#ccc] cursor-pointer">
+          <Terminal className="w-3 h-3" />
+          <span>Console</span>
+        </div>
+        <div className="flex items-center gap-1.5 hover:text-[#ccc] cursor-pointer">
+          <Box className="w-3 h-3" />
+          <span>Assets</span>
+        </div>
+        <div className="flex items-center gap-1.5 hover:text-[#ccc] cursor-pointer">
+          <Keyboard className="w-3 h-3" />
+          <span>Shortcuts</span>
+        </div>
       </div>
-      <div className="flex items-center gap-3">
-        <span>UTF-8</span>
-        <span>LF</span>
+      <div className="flex items-center gap-2">
         {totalChanges > 0 && (
-          <span className="text-[#666]">{totalChanges} change{totalChanges !== 1 ? "s" : ""}</span>
+          <span className="text-[10px] text-[#666]">{totalChanges} unsaved</span>
         )}
-        {totalChanges === 0 && (
-          <span>No changes</span>
-        )}
+        {totalChanges === 0 && <span>No changes</span>}
       </div>
     </footer>
-  )
+  );
 }

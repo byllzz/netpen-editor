@@ -100,7 +100,7 @@ export function PreviewDrawer({ html, css, js }: PreviewDrawerProps) {
       >
         {/* Handle */}
         <div
-          className="shrink-0 flex items-center justify-between px-3 cursor-ns-resize bg-[#fafafa] hover:bg-[#f0f0f0] transition-colors group select-none border-b border-[#e5e5e5]"
+          className="shrink-0 flex items-center justify-between px-3 cursor-ns-resize bg-[#0d0d0d] hover:bg-[#1a1a1a] transition-colors group select-none border-b border-[#1a1a1a]"
           style={{ height: HANDLE_HEIGHT }}
           onMouseDown={e => {
             e.preventDefault();
@@ -109,9 +109,9 @@ export function PreviewDrawer({ html, css, js }: PreviewDrawerProps) {
           onTouchStart={e => handleDragStart(e.touches[0].clientY)}
         >
           <div className="flex items-center gap-2">
-            <GripHorizontal className="w-8 h-3 text-[#ccc] group-hover:text-[#999] transition-colors" />
-            <Eye className="w-3.5 h-3.5 text-[#999]" />
-            <span className="text-[10px] font-semibold text-[#999] uppercase tracking-widest">
+            <GripHorizontal className="w-8 h-3 text-[#555] group-hover:text-[#888] transition-colors" />
+            <Eye className="w-3.5 h-3.5 text-[#555]" />
+            <span className="text-[10px] font-semibold text-[#555] uppercase tracking-widest">
               Preview
             </span>
           </div>
@@ -120,12 +120,12 @@ export function PreviewDrawer({ html, css, js }: PreviewDrawerProps) {
               e.stopPropagation();
               togglePreview();
             }}
-            className="w-5 h-5 flex items-center justify-center rounded hover:bg-[#e0e0e0] transition-colors cursor-pointer"
+            className="w-5 h-5 flex items-center justify-center rounded hover:bg-[#2a2a2a] transition-colors cursor-pointer"
           >
             {isCollapsed ? (
-              <ChevronUp className="w-3.5 h-3.5 text-[#888]" />
+              <ChevronUp className="w-3.5 h-3.5 text-[#666]" />
             ) : (
-              <ChevronDown className="w-3.5 h-3.5 text-[#888]" />
+              <ChevronDown className="w-3.5 h-3.5 text-[#666]" />
             )}
           </button>
         </div>
@@ -137,8 +137,6 @@ export function PreviewDrawer({ html, css, js }: PreviewDrawerProps) {
           </div>
         )}
       </div>
-
-      <div style={{ height: `${totalHeight + FOOTER_HEIGHT}px` }} className="shrink-0" />
     </>
   );
 }

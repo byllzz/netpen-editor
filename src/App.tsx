@@ -1,11 +1,11 @@
 import { useState, useCallback } from 'react';
 import { Header } from './components/layout/Header';
-import { Footer } from './components/layout/Footer.tsx';
+import { Footer } from './components/layout/Footer';
 import { CodeEditor } from './components/editor/CodeEditor';
 import { PreviewDrawer } from './components/preview/PreviewDrawer';
 import { useDebounce } from './hooks/useDebounce';
 import { defaultHtml, defaultCss, defaultJs } from './lib/defaults';
-import { FileCode, Palette, Braces, Circle } from 'lucide-react';
+import { Settings, ChevronDown } from 'lucide-react';
 
 function App() {
   const [html, setHtml] = useState(defaultHtml);
@@ -40,20 +40,16 @@ function App() {
 
       <div className="flex-1 flex min-h-0">
         <div className="flex-1 flex flex-col border-r border-[#1a1a1a] min-w-0">
-          <div className="px-3 py-2 border-b border-[#1a1a1a] bg-[#0d0d0d] flex items-center justify-between gap-2">
+          <div className="px-3 py-1.5 border-b border-[#1a1a1a] bg-[#0d0d0d] flex items-center justify-between gap-2 min-h-[32px]">
             <div className="flex items-center gap-2">
-              <FileCode className="w-3.5 h-3.5 text-orange-400" />
-              <span className="text-[11px] font-semibold text-[#e0e0e0] tracking-wide">HTML</span>
+              <div className="w-3.5 h-3.5 rounded-full bg-red-500 flex items-center justify-center text-[8px] font-bold text-white">
+                1
+              </div>
+              <span className="text-[11px] font-bold text-gray-300 tracking-wide">HTML</span>
             </div>
-            <div className="flex items-center gap-2">
-              {htmlChanges > 0 && (
-                <span className="text-[10px] text-[#666] tabular-nums">
-                  {htmlChanges} change{htmlChanges !== 1 ? 's' : ''}
-                </span>
-              )}
-              <Circle
-                className={`w-2 h-2 fill-current ${htmlChanges > 0 ? 'text-orange-400' : 'text-[#333]'}`}
-              />
+            <div className="flex items-center gap-1.5 text-gray-500">
+              <Settings className="w-3 h-3" />
+              <ChevronDown className="w-3 h-3" />
             </div>
           </div>
           <div className="flex-1 overflow-hidden">
@@ -62,20 +58,20 @@ function App() {
         </div>
 
         <div className="flex-1 flex flex-col border-r border-[#1a1a1a] min-w-0">
-          <div className="px-3 py-2 border-b border-[#1a1a1a] bg-[#0d0d0d] flex items-center justify-between gap-2">
+          <div className="px-3 py-1.5 border-b border-[#1a1a1a] bg-[#0d0d0d] flex items-center justify-between gap-2 min-h-[32px]">
             <div className="flex items-center gap-2">
-              <Palette className="w-3.5 h-3.5 text-sky-400" />
-              <span className="text-[11px] font-semibold text-[#e0e0e0] tracking-wide">CSS</span>
+              <div className="w-3.5 h-3.5 rounded-full bg-blue-500 flex items-center justify-center text-[8px] font-bold text-white"></div>
+              <span className="text-[11px] font-bold text-gray-300 tracking-wide">CSS</span>
             </div>
             <div className="flex items-center gap-2">
               {cssChanges > 0 && (
-                <span className="text-[10px] text-[#666] tabular-nums">
-                  {cssChanges} change{cssChanges !== 1 ? 's' : ''}
-                </span>
+                <div className="bg-yellow-500/10 text-yellow-500 px-1.5 py-0.5 rounded text-[9px] flex items-center gap-1 font-medium border border-yellow-500/20">
+                  {cssChanges} unsaved changes
+                  <span className="cursor-pointer hover:text-white">×</span>
+                </div>
               )}
-              <Circle
-                className={`w-2 h-2 fill-current ${cssChanges > 0 ? 'text-sky-400' : 'text-[#333]'}`}
-              />
+              <Settings className="w-3 h-3 text-gray-500" />
+              <ChevronDown className="w-3 h-3 text-gray-500" />
             </div>
           </div>
           <div className="flex-1 overflow-hidden">
@@ -84,20 +80,14 @@ function App() {
         </div>
 
         <div className="flex-1 flex flex-col min-w-0">
-          <div className="px-3 py-2 border-b border-[#1a1a1a] bg-[#0d0d0d] flex items-center justify-between gap-2">
+          <div className="px-3 py-1.5 border-b border-[#1a1a1a] bg-[#0d0d0d] flex items-center justify-between gap-2 min-h-[32px]">
             <div className="flex items-center gap-2">
-              <Braces className="w-3.5 h-3.5 text-amber-400" />
-              <span className="text-[11px] font-semibold text-[#e0e0e0] tracking-wide">JS</span>
+              <div className="w-3.5 h-3.5 rounded-full bg-yellow-500 flex items-center justify-center text-[8px] font-bold text-white"></div>
+              <span className="text-[11px] font-bold text-gray-300 tracking-wide">JS</span>
             </div>
-            <div className="flex items-center gap-2">
-              {jsChanges > 0 && (
-                <span className="text-[10px] text-[#666] tabular-nums">
-                  {jsChanges} change{jsChanges !== 1 ? 's' : ''}
-                </span>
-              )}
-              <Circle
-                className={`w-2 h-2 fill-current ${jsChanges > 0 ? 'text-amber-400' : 'text-[#333]'}`}
-              />
+            <div className="flex items-center gap-1.5 text-gray-500">
+              <Settings className="w-3 h-3" />
+              <ChevronDown className="w-3 h-3" />
             </div>
           </div>
           <div className="flex-1 overflow-hidden">
