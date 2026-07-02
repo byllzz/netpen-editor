@@ -5,7 +5,7 @@ import { CodeEditor } from './components/editor/CodeEditor';
 import { PreviewDrawer } from './components/preview/PreviewDrawer';
 import { useDebounce } from './hooks/useDebounce';
 import { defaultHtml, defaultCss, defaultJs } from './lib/defaults';
-import { Settings, ChevronDown } from 'lucide-react';
+import { FaCss3, FaHtml5, FaJs } from 'react-icons/fa6';
 
 function App() {
   const [html, setHtml] = useState(defaultHtml);
@@ -70,54 +70,43 @@ function App() {
     <div className="h-screen flex flex-col bg-[#0a0a0a] text-[#e0e0e0] overflow-hidden">
       <Header />
 
-      <div className="flex-1 flex min-h-0">
-        <div className="flex-1 flex flex-col border-r border-[#1a1a1a] min-w-0">
-          <div className="px-3 py-1.5 border-b border-[#1a1a1a] bg-[#0d0d0d] flex items-center justify-between gap-2 min-h-[32px]">
-            <div className="flex items-center gap-2">
-              <div className="w-3.5 h-3.5 rounded-full bg-red-500 flex items-center justify-center text-[8px] font-bold text-white">
-                1
-              </div>
-              <span className="text-[11px] font-bold text-gray-300 tracking-wide">HTML</span>
-              {renderBadge('HTML', htmlChanges, dismissedHtml, setDismissedHtml)}
+      <div className="flex-1 flex min-h-0 px-3 gap-3 bg-[#1C1C1C]">
+        <div className="flex-1 flex flex-col border-r border-l border-[#ccc]/20 min-w-0">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 bg-[#282C34]! min-h-[38px] min-w-[90px] px-2  border-t-3 border-[#ccc]/20">
+              <FaHtml5 className="w-5 h-5" />
+              <span className="text-[16px] font-medium text-gray-300 ">HTML</span>
             </div>
-            <div className="flex items-center gap-1.5 text-gray-500">
-              <Settings className="w-3 h-3" />
-              <ChevronDown className="w-3 h-3" />
-            </div>
+            {/* noti for changes */}
+            {renderBadge('HTML', htmlChanges, dismissedHtml, setDismissedHtml)}
           </div>
           <div className="flex-1 overflow-hidden">
             <CodeEditor language="html" value={html} onChange={handleHtmlChange} />
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col border-r border-[#1a1a1a] min-w-0">
-          <div className="px-3 py-1.5 border-b border-[#1a1a1a] bg-[#0d0d0d] flex items-center justify-between gap-2 min-h-[32px]">
-            <div className="flex items-center gap-2">
-              <div className="w-3.5 h-3.5 rounded-full bg-blue-500 flex items-center justify-center text-[8px] font-bold text-white"></div>
-              <span className="text-[11px] font-bold text-gray-300 tracking-wide">CSS</span>
-              {renderBadge('CSS', cssChanges, dismissedCss, setDismissedCss)}
+        <div className="flex-1 flex flex-col border-r border-l border-[#ccc]/20 min-w-0">
+          <div className=" flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 bg-[#282C34]! min-h-[35px] min-w-[100px] px-2 border-t-3 border-[#ccc]/20">
+              <FaCss3 className="w-5 h-5" />
+              <span className="text-[15px] font-bold text-gray-300 tracking-wide">CSS</span>
             </div>
-            <div className="flex items-center gap-1.5 text-gray-500">
-              <Settings className="w-3 h-3" />
-              <ChevronDown className="w-3 h-3" />
-            </div>
+            {/* later for more */}
+            {renderBadge('CSS', cssChanges, dismissedCss, setDismissedCss)}
           </div>
           <div className="flex-1 overflow-hidden">
             <CodeEditor language="css" value={css} onChange={handleCssChange} />
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col min-w-0">
-          <div className="px-3 py-1.5 border-b border-[#1a1a1a] bg-[#0d0d0d] flex items-center justify-between gap-2 min-h-[32px]">
-            <div className="flex items-center gap-2">
-              <div className="w-3.5 h-3.5 rounded-full bg-yellow-500 flex items-center justify-center text-[8px] font-bold text-white"></div>
-              <span className="text-[11px] font-bold text-gray-300 tracking-wide">JS</span>
-              {renderBadge('JS', jsChanges, dismissedJs, setDismissedJs)}
+        <div className="flex-1 flex flex-col min-w-0 border-r border-l border-[#ccc]/20">
+          <div className=" flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 bg-[#282C34]! min-h-[35px] min-w-[100px] px-2 border-t-3 border-[#ccc]/20">
+              <FaJs className="w-5 h-5" />
+              <span className="text-[15px] font-bold text-gray-300 tracking-wide">JS</span>
             </div>
-            <div className="flex items-center gap-1.5 text-gray-500">
-              <Settings className="w-3 h-3" />
-              <ChevronDown className="w-3 h-3" />
-            </div>
+            {/* later for more */}
+            {renderBadge('JS', jsChanges, dismissedJs, setDismissedJs)}
           </div>
           <div className="flex-1 overflow-hidden">
             <CodeEditor language="js" value={js} onChange={handleJsChange} />
