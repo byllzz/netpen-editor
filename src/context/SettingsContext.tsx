@@ -1,7 +1,6 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 
-// Export as a const object so it exists at runtime
 export const EDITOR_THEMES = {
   ONE_DARK: 'oneDark',
   ONE_LIGHT: 'oneLight',
@@ -9,7 +8,6 @@ export const EDITOR_THEMES = {
   SOLARIZED_DARK: 'solarizedDark',
 } as const;
 
-// Export the type for TypeScript
 export type EditorTheme = (typeof EDITOR_THEMES)[keyof typeof EDITOR_THEMES];
 
 interface SettingsContextType {
@@ -25,11 +23,72 @@ interface SettingsContextType {
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
+const SETTINGS_STORAGE_KEY = 'netpen_settings';
+
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<EditorTheme>('oneDark');
-  const [fontSize, setFontSize] = useState(13);
-  const [tabSize, setTabSize] = useState(2);
-  const [wordWrap, setWordWrap] = useState(false);
+  // Load settings from localStorage or use defaults
+  const [theme, setTheme] = useState<EditorTheme>(() => {
+    const saved = localStorage.getItem(SETTINGS_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.theme || 'oneDark';
+      } catch {
+        return 'oneDark';
+      }
+    }
+    return 'oneDark';
+  });
+
+  const [fontSize, setFontSize] = useState<number>(() => {
+    const saved = localStorage.getItem(SETTINGS_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.fontSize || 13;
+      } catch {
+        return 13;
+      }
+    }
+    return 13;
+  });
+
+  const [tabSize, setTabSize] = useState<number>(() => {
+    const saved = localStorage.getItem(SETTINGS_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.tabSize || 2;
+      } catch {
+        return 2;
+      }
+    }
+    return 2;
+  });
+
+  const [wordWrap, setWordWrap] = useState<boolean>(() => {
+    const saved = localStorage.getItem(SETTINGS_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.wordWrap || false;
+      } catch {
+        return false;
+      }
+    }
+    return false;
+  });
+
+  // Save settings to localStorage whenever they change
+  useEffect(() => {
+    const settings = {
+      theme,
+      fontSize,
+      tabSize,
+      wordWrap,
+    };
+    localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+  }, [theme, fontSize, tabSize, wordWrap]);
 
   return (
     <SettingsContext.Provider

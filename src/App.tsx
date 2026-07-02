@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { CodeEditor } from './components/editor/CodeEditor';
@@ -8,26 +8,128 @@ import { defaultHtml, defaultCss, defaultJs } from './lib/defaults';
 import { FaCss3, FaHtml5, FaJs } from 'react-icons/fa6';
 import { type LayoutMode } from './lib/layout';
 
+const CODE_STORAGE_KEY = 'netpen_code';
+const PROJECT_NAME_KEY = 'netpen_project_name';
+
 function App() {
-  const [html, setHtml] = useState(defaultHtml);
-  const [css, setCss] = useState(defaultCss);
-  const [js, setJs] = useState(defaultJs);
-  const [htmlChanges, setHtmlChanges] = useState(0);
-  const [cssChanges, setCssChanges] = useState(0);
-  const [jsChanges, setJsChanges] = useState(0);
+  const [html, setHtml] = useState(() => {
+    const saved = localStorage.getItem(CODE_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.html || defaultHtml;
+      } catch {
+        return defaultHtml;
+      }
+    }
+    return defaultHtml;
+  });
+
+  const [css, setCss] = useState(() => {
+    const saved = localStorage.getItem(CODE_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.css || defaultCss;
+      } catch {
+        return defaultCss;
+      }
+    }
+    return defaultCss;
+  });
+
+  const [js, setJs] = useState(() => {
+    const saved = localStorage.getItem(CODE_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.js || defaultJs;
+      } catch {
+        return defaultJs;
+      }
+    }
+    return defaultJs;
+  });
+
+  const [htmlChanges, setHtmlChanges] = useState(() => {
+    const saved = localStorage.getItem(CODE_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.htmlChanges || 0;
+      } catch {
+        return 0;
+      }
+    }
+    return 0;
+  });
+
+  const [cssChanges, setCssChanges] = useState(() => {
+    const saved = localStorage.getItem(CODE_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.cssChanges || 0;
+      } catch {
+        return 0;
+      }
+    }
+    return 0;
+  });
+
+  const [jsChanges, setJsChanges] = useState(() => {
+    const saved = localStorage.getItem(CODE_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed.jsChanges || 0;
+      } catch {
+        return 0;
+      }
+    }
+    return 0;
+  });
 
   const [layout, setLayout] = useState<LayoutMode>('default');
-
   const [dismissedHtml, setDismissedHtml] = useState(false);
   const [dismissedCss, setDismissedCss] = useState(false);
   const [dismissedJs, setDismissedJs] = useState(false);
-  const [projectName, setProjectName] = useState('Untitled');
+  const [projectName, setProjectName] = useState(() => {
+    return localStorage.getItem(PROJECT_NAME_KEY) || 'Untitled';
+  });
 
   const debouncedHtml = useDebounce(html, 400);
   const debouncedCss = useDebounce(css, 400);
   const debouncedJs = useDebounce(js, 400);
 
   const totalChanges = htmlChanges + cssChanges + jsChanges;
+
+  // Save state for the button
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+
+  // When debounced values change, trigger saving status
+  useEffect(() => {
+    if (totalChanges === 0) {
+      setSaveStatus('idle');
+      return;
+    }
+    setSaveStatus('saving');
+    const timer = setTimeout(() => {
+      setSaveStatus('saved');
+    }, 600); // show "Changes Saved" after a short delay
+    return () => clearTimeout(timer);
+  }, [debouncedHtml, debouncedCss, debouncedJs, totalChanges]);
+
+  // Auto-save code to localStorage
+  useEffect(() => {
+    const data = { html, css, js, htmlChanges, cssChanges, jsChanges };
+    localStorage.setItem(CODE_STORAGE_KEY, JSON.stringify(data));
+  }, [html, css, js, htmlChanges, cssChanges, jsChanges]);
+
+  // Auto-save project name
+  useEffect(() => {
+    localStorage.setItem(PROJECT_NAME_KEY, projectName);
+  }, [projectName]);
 
   const handleHtmlChange = useCallback((value: string) => {
     setHtml(value);
@@ -79,11 +181,10 @@ function App() {
         js={js}
         projectName={projectName}
         setProjectName={setProjectName}
+        saveStatus={saveStatus}
       />
-
-      {/* MAIN CONTENT AREA - Changes layout based on state */}
+      {/* MAIN CONTENT AREA - unchanged */}
       <div className="flex-1 flex min-h-0 overflow-hidden bg-[#1C1C1C]">
-        {/* CASE 1: DEFAULT LAYOUT - Editors side-by-side, Preview Drawer at bottom */}
         {layout === 'default' && (
           <div className="flex-1 flex flex-row min-h-0 px-3 gap-3">
             <div className="flex-1 flex flex-col border-r border-l border-[#ccc]/20 min-w-0">
@@ -98,7 +199,6 @@ function App() {
                 <CodeEditor language="html" value={html} onChange={handleHtmlChange} />
               </div>
             </div>
-
             <div className="flex-1 flex flex-col border-r border-l border-[#ccc]/20 min-w-0">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 bg-[#282C34]! min-h-[35px] min-w-[100px] px-2 border-t-3 border-[#ccc]/20">
@@ -111,7 +211,6 @@ function App() {
                 <CodeEditor language="css" value={css} onChange={handleCssChange} />
               </div>
             </div>
-
             <div className="flex-1 flex flex-col min-w-0 border-r border-l border-[#ccc]/20">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 bg-[#282C34]! min-h-[35px] min-w-[100px] px-2 border-t-3 border-[#ccc]/20">
@@ -126,13 +225,9 @@ function App() {
             </div>
           </div>
         )}
-
-        {/* CASE 2: SIDEBAR LAYOUT - Editors vertical left, Preview full height right */}
         {layout === 'sidebar' && (
           <div className="flex flex-row w-full h-full">
-            {/* Left Sidebar - Vertical Editors */}
             <div className="w-[300px] min-w-[250px] max-w-[400px] h-full flex flex-col border-r border-[#ccc]/20 bg-[#1C1C1C]">
-              {/* HTML Vertical */}
               <div className="flex-1 flex flex-col min-h-0 border-b border-[#ccc]/20">
                 <div className="flex items-center justify-between bg-[#282C34] min-h-[35px] px-2 border-t-3 border-[#ccc]/20 shrink-0">
                   <div className="flex items-center gap-1.5">
@@ -145,8 +240,6 @@ function App() {
                   <CodeEditor language="html" value={html} onChange={handleHtmlChange} />
                 </div>
               </div>
-
-              {/* CSS Vertical */}
               <div className="flex-1 flex flex-col min-h-0 border-b border-[#ccc]/20">
                 <div className="flex items-center justify-between bg-[#282C34] min-h-[35px] px-2 border-t-3 border-[#ccc]/20 shrink-0">
                   <div className="flex items-center gap-1.5">
@@ -159,8 +252,6 @@ function App() {
                   <CodeEditor language="css" value={css} onChange={handleCssChange} />
                 </div>
               </div>
-
-              {/* JS Vertical */}
               <div className="flex-1 flex flex-col min-h-0">
                 <div className="flex items-center justify-between bg-[#282C34] min-h-[35px] px-2 border-t-3 border-[#ccc]/20 shrink-0">
                   <div className="flex items-center gap-1.5">
@@ -174,8 +265,6 @@ function App() {
                 </div>
               </div>
             </div>
-
-            {/* Right Side - Full Height Preview Drawer */}
             <div className="flex-1 h-full relative">
               <PreviewDrawer
                 html={debouncedHtml}
@@ -186,13 +275,9 @@ function App() {
             </div>
           </div>
         )}
-
-        {/* CASE 3: SPLIT LAYOUT - Fixed! Three vertical panels share equal height */}
         {layout === 'split' && (
           <div className="flex flex-row w-full h-full">
-            {/* Left Side - Editors (Stacked vertically, equal flex-1) */}
             <div className="w-[50%] min-w-[400px] h-full flex flex-col border-r border-[#ccc]/20 bg-[#1C1C1C]">
-              {/* HTML - flex-1 to share space equally */}
               <div className="flex-1 flex flex-col min-h-0 border-b border-[#ccc]/20">
                 <div className="flex items-center justify-between bg-[#282C34] min-h-[35px] px-2 border-t-3 border-[#ccc]/20 shrink-0">
                   <div className="flex items-center gap-1.5">
@@ -205,8 +290,6 @@ function App() {
                   <CodeEditor language="html" value={html} onChange={handleHtmlChange} />
                 </div>
               </div>
-
-              {/* CSS - flex-1 to share space equally */}
               <div className="flex-1 flex flex-col min-h-0 border-b border-[#ccc]/20">
                 <div className="flex items-center justify-between bg-[#282C34] min-h-[35px] px-2 border-t-3 border-[#ccc]/20 shrink-0">
                   <div className="flex items-center gap-1.5">
@@ -219,8 +302,6 @@ function App() {
                   <CodeEditor language="css" value={css} onChange={handleCssChange} />
                 </div>
               </div>
-
-              {/* JS - flex-1 to share space equally */}
               <div className="flex-1 flex flex-col min-h-0">
                 <div className="flex items-center justify-between bg-[#282C34] min-h-[35px] px-2 border-t-3 border-[#ccc]/20 shrink-0">
                   <div className="flex items-center gap-1.5">
@@ -234,8 +315,6 @@ function App() {
                 </div>
               </div>
             </div>
-
-            {/* Right Side - Full Height Preview Drawer */}
             <div className="flex-1 h-full relative">
               <PreviewDrawer
                 html={debouncedHtml}
@@ -248,7 +327,6 @@ function App() {
         )}
       </div>
 
-      {/* Preview Drawer - Only shows for Default layout at the BOTTOM */}
       {layout === 'default' && (
         <PreviewDrawer
           html={debouncedHtml}
@@ -257,7 +335,6 @@ function App() {
           fullHeight={false}
         />
       )}
-
       <Footer totalChanges={totalChanges} />
     </div>
   );
