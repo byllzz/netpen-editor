@@ -10,7 +10,6 @@ import { ExportPanel } from '../export/ExportPanel';
 import { SettingsPanel } from '../settings/SettingsPanel';
 
 interface HeaderProps {
-  totalChanges: number;
   layout: LayoutMode;
   setLayout: (mode: LayoutMode) => void;
   html: string;
@@ -22,7 +21,6 @@ interface HeaderProps {
 }
 
 export function Header({
-  totalChanges,
   layout,
   setLayout,
   html,
@@ -42,7 +40,6 @@ export function Header({
     setShowLayoutMenu(false);
   };
 
-  // Save button appearance based on status
   let btnText = 'Save';
   let btnClass = 'bg-[#5A5F73]! hover:bg-[#3a3f50] text-white';
   if (saveStatus === 'saving') {
@@ -78,7 +75,7 @@ export function Header({
             <span>{btnText}</span>
           </Button>
 
-          {/* Export Button (re‑added) */}
+          {/* Export Button */}
           <Button
             className="bg-[#5A5F73]! hover:bg-[#3a3f50]! text-white text-[15px]! font-medium px-[18px] h-10.5 rounded-[4px]! flex items-center gap-[5px]! transition-colors border-0 cursor-pointer"
             onClick={() => setIsExportOpen(true)}
@@ -142,7 +139,6 @@ export function Header({
         </div>
       </header>
 
-      {/* Modals */}
       <ExportPanel
         isOpen={isExportOpen}
         onClose={() => setIsExportOpen(false)}

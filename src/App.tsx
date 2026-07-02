@@ -133,17 +133,17 @@ function App() {
 
   const handleHtmlChange = useCallback((value: string) => {
     setHtml(value);
-    setHtmlChanges(p => p + 1);
+    setHtmlChanges((prev: number) => prev + 1);
     setDismissedHtml(false);
   }, []);
   const handleCssChange = useCallback((value: string) => {
     setCss(value);
-    setCssChanges(p => p + 1);
+    setCssChanges((prev: number) => prev + 1);
     setDismissedCss(false);
   }, []);
   const handleJsChange = useCallback((value: string) => {
     setJs(value);
-    setJsChanges(p => p + 1);
+    setJsChanges((prev: number) => prev + 1);
     setDismissedJs(false);
   }, []);
 
@@ -173,7 +173,6 @@ function App() {
   return (
     <div className="h-screen flex flex-col bg-[#0a0a0a] text-[#e0e0e0] overflow-hidden">
       <Header
-        totalChanges={totalChanges}
         layout={layout}
         setLayout={setLayout}
         html={html}
