@@ -1,5 +1,9 @@
 <p align="center">
+<<<<<<< HEAD
   <img src="/src/assets/favicon.svg" width="120" alt="NetPen Logo" />
+=======
+  <img src="./favicon.svg" width="120" alt="NetPen Logo" />
+>>>>>>> b363ae7857cba175d7da858f5419fbef7062c380
 </p>
 
 <h1 align="center">NetPen</h1>
