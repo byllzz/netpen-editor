@@ -4,17 +4,15 @@ import { Button } from '../ui/Button';
 import { IoIosSettings } from 'react-icons/io';
 import { RiLayout3Fill } from 'react-icons/ri';
 import { IoIosCloud } from 'react-icons/io';
-import { BsPencilFill } from 'react-icons/bs';
 import { Columns, Sidebar, Split } from 'lucide-react';
 
 import logo from '/log.svg';
 import { LAYOUT_MODES, type LayoutMode } from '../../lib/layout';
 import { ProjectNameEditor } from './ProjectNameEditor';
 import { ExportPanel } from '../export/ExportPanel';
-import { SettingsPanel } from '../settings/SettingsPanel'; // <--- Added import
+import { SettingsPanel } from '../settings/SettingsPanel';
 
 interface HeaderProps {
-  totalChanges: number;
   layout: LayoutMode;
   setLayout: (mode: LayoutMode) => void;
   html: string;
@@ -25,7 +23,6 @@ interface HeaderProps {
 }
 
 export function Header({
-  totalChanges,
   layout,
   setLayout,
   html,

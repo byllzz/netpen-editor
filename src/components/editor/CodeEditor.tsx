@@ -77,10 +77,33 @@ export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
       '.cm-foldPlaceholder': { backgroundColor: '#1a1a1a', color: '#666', border: 'none' },
     };
 
+    // In your light theme block:
     if (theme === 'oneLight') {
-      baseTheme = EditorView.theme({}); // Empty theme for light mode
+      baseTheme = EditorView.theme({});
       themeOverrides = {
-        '&': { height: '100%', fontSize: `${fontSize}px`, backgroundColor: '#fafafa' },
+        '&': {
+          height: '100%',
+          fontSize: `${fontSize}px`,
+          backgroundColor: '#fafafa',
+
+          // NEST ALL SYNTAX COLORS INSIDE '&' HERE:
+          '& .cm-keyword': { color: '#d73a49' },
+          '& .cm-operator': { color: '#24292e' },
+          '& .cm-variable': { color: '#24292e' },
+          '& .cm-variable-2': { color: '#005cc5' },
+          '& .cm-variable-3': { color: '#6f42c1' },
+          '& .cm-builtin': { color: '#005cc5' },
+          '& .cm-atom': { color: '#005cc5' },
+          '& .cm-number': { color: '#005cc5' },
+          '& .cm-string': { color: '#032f62' },
+          '& .cm-string-2': { color: '#032f62' },
+          '& .cm-comment': { color: '#6a737d', fontStyle: 'italic' },
+          '& .cm-tag': { color: '#22863a' },
+          '& .cm-bracket': { color: '#24292e' },
+          '& .cm-attribute': { color: '#6f42c1' },
+          '& .cm-hr': { color: '#6a737d' },
+          '& .cm-link': { color: '#032f62' },
+        },
         '.cm-scroller': {
           fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
           lineHeight: '1.7',
@@ -96,23 +119,6 @@ export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
         '.cm-cursor': { borderLeftColor: '#333' },
         '.cm-selectionBackground': { backgroundColor: '#add6ff !important' },
         '.cm-foldPlaceholder': { backgroundColor: '#e0e0e0', color: '#888', border: 'none' },
-        // Light mode syntax colors
-        '& .cm-keyword': { color: '#d73a49' },
-        '& .cm-operator': { color: '#24292e' },
-        '& .cm-variable': { color: '#24292e' },
-        '& .cm-variable-2': { color: '#005cc5' },
-        '& .cm-variable-3': { color: '#6f42c1' },
-        '& .cm-builtin': { color: '#005cc5' },
-        '& .cm-atom': { color: '#005cc5' },
-        '& .cm-number': { color: '#005cc5' },
-        '& .cm-string': { color: '#032f62' },
-        '& .cm-string-2': { color: '#032f62' },
-        '& .cm-comment': { color: '#6a737d', fontStyle: 'italic' },
-        '& .cm-tag': { color: '#22863a' },
-        '& .cm-bracket': { color: '#24292e' },
-        '& .cm-attribute': { color: '#6f42c1' },
-        '& .cm-hr': { color: '#6a737d' },
-        '& .cm-link': { color: '#032f62' },
       };
     } else if (theme === 'vscodeDark') {
       baseTheme = oneDark;
@@ -188,7 +194,7 @@ export function CodeEditor({ language, value, onChange }: CodeEditorProps) {
       view.destroy();
       viewRef.current = null;
     };
-  }, [language, theme, fontSize, tabSize, wordWrap]);
+  };, [language, theme, fontSize, tabSize, wordWrap]);
 
   useEffect(() => {
     const view = viewRef.current;

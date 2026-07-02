@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Download, FileCode, Archive, Code2, FileJson } from 'lucide-react';
+import { X, Download, FileCode, Archive, Code2 } from 'lucide-react';
 import { Preview } from '../preview/Preview';
 import { Button } from '../ui/Button';
 import JSZip from 'jszip';
