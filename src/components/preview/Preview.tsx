@@ -13,7 +13,24 @@ export function Preview({ html, css, js }: PreviewProps) {
     return `<!DOCTYPE html>
 <html>
 <head>
-  <style>${css}</style>
+  <style>
+    /* Reset default body margin so shrinking height doesn't cause overflow */
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Hide scrollbars visually while still allowing scroll if content needs it */
+    html {
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
+    }
+    html::-webkit-scrollbar {
+      display: none; /* Chrome/Safari */
+    }
+
+    ${css}
+  </style>
 </head>
 <body>
   ${html}
