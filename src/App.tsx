@@ -10,7 +10,7 @@ import { type LayoutMode } from './lib/layout';
 
 const CODE_STORAGE_KEY = 'netpen_code';
 const PROJECT_NAME_KEY = 'netpen_project_name';
-const LAYOUT_STORAGE_KEY = 'netpen_layout'; // Added
+const LAYOUT_STORAGE_KEY = 'netpen_layout';
 
 function App() {
   const [html, setHtml] = useState(() => {
@@ -91,7 +91,6 @@ function App() {
     return 0;
   });
 
-  // Load layout from localStorage
   const [layout, setLayout] = useState<LayoutMode>(() => {
     const saved = localStorage.getItem(LAYOUT_STORAGE_KEY);
     return (saved as LayoutMode) || 'default';
@@ -124,7 +123,6 @@ function App() {
     return () => clearTimeout(timer);
   }, [debouncedHtml, debouncedCss, debouncedJs, totalChanges]);
 
-  // Save layout preference
   useEffect(() => {
     localStorage.setItem(LAYOUT_STORAGE_KEY, layout);
   }, [layout]);
@@ -191,8 +189,11 @@ function App() {
       />
 
       <div className="flex-1 flex min-h-0 overflow-hidden bg-[#1C1C1C]">
+        {/* CASE 1: DEFAULT LAYOUT - FIXED OVERFLOW HERE */}
         {layout === 'default' && (
-          <div className="flex-1 flex flex-row min-h-0 px-3 gap-3">
+          <div className="flex-1 flex flex-row min-h-0 min-w-0 px-3 gap-3">
+            {' '}
+            {/* <--- Added min-w-0 here */}
             <div className="flex-1 flex flex-col border-r border-l border-[#ccc]/20 min-w-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 bg-[#282C34]! min-h-[38px] min-w-[90px] px-2 border-t-3 border-[#ccc]/20">
@@ -231,6 +232,8 @@ function App() {
             </div>
           </div>
         )}
+
+        {/* CASE 2: SIDEBAR LAYOUT (Unchanged) */}
         {layout === 'sidebar' && (
           <div className="flex flex-row w-full h-full">
             <div className="w-[300px] min-w-[250px] max-w-[400px] h-full flex flex-col border-r border-[#ccc]/20 bg-[#1C1C1C]">
@@ -281,6 +284,8 @@ function App() {
             </div>
           </div>
         )}
+
+        {/* CASE 3: SPLIT LAYOUT (Unchanged) */}
         {layout === 'split' && (
           <div className="flex flex-row w-full h-full">
             <div className="w-[50%] min-w-[400px] h-full flex flex-col border-r border-[#ccc]/20 bg-[#1C1C1C]">
