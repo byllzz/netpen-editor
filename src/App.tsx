@@ -165,7 +165,7 @@ function App() {
               </div>
             </div>
 
-            {/* Right Side - Full Height Preview Drawer (Now with drag logic but full height) */}
+            {/* Right Side - Full Height Preview Drawer */}
             <div className="flex-1 h-full relative">
               <PreviewDrawer
                 html={debouncedHtml}
@@ -177,12 +177,13 @@ function App() {
           </div>
         )}
 
-        {/* CASE 3: SPLIT LAYOUT - Just a variant, uses same logic as sidebar for now */}
+        {/* CASE 3: SPLIT LAYOUT - Fixed! Three vertical panels share equal height */}
         {layout === 'split' && (
           <div className="flex flex-row w-full h-full">
-            {/* Left Side - Editors (Stacked vertically) */}
+            {/* Left Side - Editors (Stacked vertically, equal flex-1) */}
             <div className="w-[50%] min-w-[400px] h-full flex flex-col border-r border-[#ccc]/20 bg-[#1C1C1C]">
-              <div className="flex-1 flex flex-col border-b border-[#ccc]/20">
+              {/* HTML - flex-1 to share space equally */}
+              <div className="flex-1 flex flex-col min-h-0 border-b border-[#ccc]/20">
                 <div className="flex items-center justify-between bg-[#282C34] min-h-[35px] px-2 border-t-3 border-[#ccc]/20 shrink-0">
                   <div className="flex items-center gap-1.5">
                     <FaHtml5 className="w-5 h-5" />
@@ -194,7 +195,9 @@ function App() {
                   <CodeEditor language="html" value={html} onChange={handleHtmlChange} />
                 </div>
               </div>
-              <div className="flex-1 flex flex-col border-b border-[#ccc]/20">
+
+              {/* CSS - flex-1 to share space equally */}
+              <div className="flex-1 flex flex-col min-h-0 border-b border-[#ccc]/20">
                 <div className="flex items-center justify-between bg-[#282C34] min-h-[35px] px-2 border-t-3 border-[#ccc]/20 shrink-0">
                   <div className="flex items-center gap-1.5">
                     <FaCss3 className="w-5 h-5" />
@@ -206,7 +209,9 @@ function App() {
                   <CodeEditor language="css" value={css} onChange={handleCssChange} />
                 </div>
               </div>
-              <div className="flex-1 flex flex-col">
+
+              {/* JS - flex-1 to share space equally */}
+              <div className="flex-1 flex flex-col min-h-0">
                 <div className="flex items-center justify-between bg-[#282C34] min-h-[35px] px-2 border-t-3 border-[#ccc]/20 shrink-0">
                   <div className="flex items-center gap-1.5">
                     <FaJs className="w-5 h-5" />
